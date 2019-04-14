@@ -12,10 +12,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.locate_photo_app.R;
+import com.example.locate_photo_app.utils.GPSLocation;
 import com.example.locate_photo_app.utils.Image;
 import com.example.locate_photo_app.utils.Permissions;
+
+import java.io.IOException;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -24,6 +28,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     Button photo, gallery, settings;
     Permissions permissions;
     Image img;
+    GPSLocation gps;
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -31,9 +36,15 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+
         permissions = new Permissions();
         img = new Image();
+        gps = new GPSLocation(this);
+
         permissions.checkPermissions(this, this);
+        gps.getLocation();
+
+
         setComponents();
     }
 
@@ -75,13 +86,21 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         startActivityForResult(imageIntent,1);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (requestCode) {
             case 1:
                 if (resultCode == Activity.RESULT_OK) {
-                    System.out.println("###### PIC CAPTURED #####");
+                    if(gps.canGetLocation()) {
+
+                        Toast.makeText(getApplicationContext(),
+                                 img.getImageName() + " captured, \nLocation: - " + gps.getAddress(),
+                                            Toast.LENGTH_LONG).show();
+
+                    }
                 }
         }
     }
