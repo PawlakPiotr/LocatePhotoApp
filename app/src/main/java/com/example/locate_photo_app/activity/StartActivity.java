@@ -3,6 +3,11 @@ package com.example.locate_photo_app.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -19,7 +24,9 @@ import com.example.locate_photo_app.utils.GPSLocation;
 import com.example.locate_photo_app.utils.Image;
 import com.example.locate_photo_app.utils.Permissions;
 
-import java.io.IOException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -64,11 +71,11 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.gallery_btn:
                 startActivity(
-                        getSpecificIntent(StartActivity.class)); // TODO gallery activity
+                        getSpecificIntent(GalleryActivity.class));
                 break;
             case R.id.settings_btn:
                 startActivity(
-                        getSpecificIntent(SettingsActivity.class)); // TODO settings activity
+                        getSpecificIntent(SettingsActivity.class));
                 break;
             default:
                 break;
@@ -76,14 +83,16 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public void takePhoto() {
-
         Intent imageIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
 
-        Uri imageUri = FileProvider.getUriForFile(
-                StartActivity.this, auth_provider, img.setImage());
+        if(imageIntent.resolveActivity(getPackageManager()) != null) {
+            Uri imageUri = FileProvider.getUriForFile(
+                    StartActivity.this, auth_provider, img.setImage());
 
-        imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(imageIntent,1);
+            imageIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+
+            startActivityForResult(imageIntent,1);
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -95,6 +104,25 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
             case 1:
                 if (resultCode == Activity.RESULT_OK) {
                     if(gps.canGetLocation()) {
+
+                        Bitmap bmp = makeBitmapMutable(
+                                BitmapFactory.decodeFile(img.getImgFile().getAbsolutePath()));
+
+                        Canvas cnv = new Canvas(bmp);
+                        Paint pnt = new Paint();
+
+                        pnt.setTextSize(50);
+                        pnt.setColor(Color.WHITE);
+
+                        cnv.drawBitmap(bmp, 0,0, pnt);
+                        cnv.drawText(gps.getAddress(), 20, 85, pnt);
+
+                        try {
+                            bmp.compress(Bitmap.CompressFormat.JPEG,100,
+                                    new FileOutputStream(new File(img.getImgFile().getAbsolutePath())));
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
 
                         Toast.makeText(getApplicationContext(),
                                  img.getImageName() + " captured, \nLocation: - " + gps.getAddress(),
@@ -113,5 +141,9 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
 
    public Intent getSpecificIntent(Class cs) {
         return new Intent(this, cs);
+    }
+
+    private Bitmap makeBitmapMutable(Bitmap bitmap) {
+        return bitmap.copy(Bitmap.Config.ARGB_8888, true);
     }
 }
