@@ -3,11 +3,6 @@ package com.example.locate_photo_app.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -24,9 +19,6 @@ import com.example.locate_photo_app.utils.GPSLocation;
 import com.example.locate_photo_app.utils.Image;
 import com.example.locate_photo_app.utils.Permissions;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -36,6 +28,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     Permissions permissions;
     Image img;
     GPSLocation gps;
+    int color;
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -51,6 +44,8 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         permissions.checkPermissions(this, this);
         gps.getLocation();
 
+        color = getIntent().getStringExtra("color") != null ? Integer.valueOf(getIntent().getStringExtra("color")) : -1;
+        img.setImgColor(color);
 
         setComponents();
     }
@@ -105,24 +100,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
                 if (resultCode == Activity.RESULT_OK) {
                     if(gps.canGetLocation()) {
 
-                        Bitmap bmp = makeBitmapMutable(
-                                BitmapFactory.decodeFile(img.getImgFile().getAbsolutePath()));
-
-                        Canvas cnv = new Canvas(bmp);
-                        Paint pnt = new Paint();
-
-                        pnt.setTextSize(50);
-                        pnt.setColor(Color.WHITE);
-
-                        cnv.drawBitmap(bmp, 0,0, pnt);
-                        cnv.drawText(gps.getAddress(), 20, 85, pnt);
-
-                        try {
-                            bmp.compress(Bitmap.CompressFormat.JPEG,100,
-                                    new FileOutputStream(new File(img.getImgFile().getAbsolutePath())));
-                        } catch (FileNotFoundException e) {
-                            e.printStackTrace();
-                        }
+                        img.addLocationToImage(gps);
 
                         Toast.makeText(getApplicationContext(),
                                  img.getImageName() + " captured, \nLocation: - " + gps.getAddress(),
@@ -140,10 +118,12 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     }
 
    public Intent getSpecificIntent(Class cs) {
-        return new Intent(this, cs);
+        Intent intent = new Intent(this, cs);
+
+        intent.putExtra("color", String.valueOf(img.getImg_color()));
+        intent.putExtra("txtSize", String.valueOf(img.getImg_text_size()));
+
+        return intent;
     }
 
-    private Bitmap makeBitmapMutable(Bitmap bitmap) {
-        return bitmap.copy(Bitmap.Config.ARGB_8888, true);
-    }
 }
