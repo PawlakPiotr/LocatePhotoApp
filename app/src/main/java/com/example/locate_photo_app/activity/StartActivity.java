@@ -28,7 +28,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
     Permissions permissions;
     Image img;
     GPSLocation gps;
-    int color;
+    int color, txtSize;
 
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -44,8 +44,7 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         permissions.checkPermissions(this, this);
         gps.getLocation();
 
-        color = getIntent().getStringExtra("color") != null ? Integer.valueOf(getIntent().getStringExtra("color")) : -1;
-        img.setImgColor(color);
+        getIntentValues();
 
         setComponents();
     }
@@ -124,6 +123,17 @@ public class StartActivity extends AppCompatActivity implements View.OnClickList
         intent.putExtra("txtSize", String.valueOf(img.getImg_text_size()));
 
         return intent;
+    }
+
+    private void getIntentValues() {
+        color = getIntent().getStringExtra("color") != null ?
+                    Integer.valueOf(getIntent().getStringExtra("color")) : img.getImg_color();
+
+        txtSize = getIntent().getStringExtra("txtSize") != null ?
+                    Integer.valueOf(getIntent().getStringExtra("txtSize")) : img.getImg_text_size();
+
+        img.setImgColor(color);
+        img.setImgTextSize(txtSize);
     }
 
 }

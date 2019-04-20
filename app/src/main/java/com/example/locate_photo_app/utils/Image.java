@@ -1,6 +1,5 @@
 package com.example.locate_photo_app.utils;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;

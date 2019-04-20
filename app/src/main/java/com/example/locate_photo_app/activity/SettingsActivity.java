@@ -22,23 +22,24 @@ import java.util.Map;
 public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     Map<String, Integer> imgColor;
+    ArrayAdapter<CharSequence> adapter;
+
     Spinner colors;
     Image img;
-    ArrayAdapter<CharSequence> adapter;
-    int color, txtSize;
+
     Button save;
     EditText locationSize;
+
+    int color, txtSize;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        img = new Image();
-        color = Integer.valueOf(getIntent().getStringExtra("color"));
-        txtSize = Integer.valueOf(getIntent().getStringExtra("txtSize"));
 
-        img.setImgColor(color);
-        img.setImgTextSize(txtSize);
+        img = new Image();
+
+        getValuesFromIntent();
 
         setComponents();
         setColorsMap();
@@ -59,12 +60,15 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         colors.setOnItemSelectedListener(this);
 
         locationSize = findViewById(R.id.location_text_size);
+        System.out.println("### setCOMP => " + img.getImg_text_size());
         locationSize.setText(String.valueOf(img.getImg_text_size()));
 
         save = findViewById(R.id.save_btn);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                img.setImgTextSize(Integer.valueOf(locationSize.getText().toString()));
+                System.out.println("### " + img.getImg_text_size());
                 startActivity(getSpecificIntent(StartActivity.class));
             }
         });
@@ -108,6 +112,14 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         return new Intent(this, cs)
                 .putExtra("color", String.valueOf(img.getImg_color()))
                 .putExtra("txtSize", String.valueOf(img.getImg_text_size()));
+    }
+
+    private void getValuesFromIntent() {
+        color = Integer.valueOf(getIntent().getStringExtra("color"));
+        txtSize = Integer.valueOf(getIntent().getStringExtra("txtSize"));
+
+        img.setImgColor(color);
+        img.setImgTextSize(txtSize);
     }
 
 }
