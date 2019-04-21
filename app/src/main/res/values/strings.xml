@@ -6,6 +6,9 @@
     <string name="location_text_color">COLOR OF LOCATION TEXT IN PHOTO</string>
     <string name="save">SAVE</string>
     <string name="location_text_size">SIZE OF LOCATION TEXT IN PHOTO</string>
+    <string name="gallery_item">gallery_item</string>
+    <string name="img_location">IMG_LOCATION</string>
+    <string name="img_name">IMG_NAME</string>
 
     <string-array name="colors_arr">
         <item>WHITE</item>

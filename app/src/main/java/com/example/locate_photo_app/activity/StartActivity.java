@@ -3,8 +3,10 @@ package com.example.locate_photo_app.activity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.FileProvider;
@@ -19,10 +21,16 @@ import com.example.locate_photo_app.utils.GPSLocation;
 import com.example.locate_photo_app.utils.Image;
 import com.example.locate_photo_app.utils.Permissions;
 
+import java.util.List;
+
 
 public class StartActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static String auth_provider = "com.example.locate_photo_app.provider";
+    String path = Environment.getExternalStorageDirectory().toString()+"/PRM_IMAGES";
+
+    List<Bitmap> images;
+    List<String> file_names;
 
     Button photo, gallery, settings;
     Permissions permissions;

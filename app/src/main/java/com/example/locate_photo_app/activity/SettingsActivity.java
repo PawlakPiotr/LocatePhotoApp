@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.example.locate_photo_app.R;
 import com.example.locate_photo_app.utils.Image;
@@ -60,7 +58,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         colors.setOnItemSelectedListener(this);
 
         locationSize = findViewById(R.id.location_text_size);
-        System.out.println("### setCOMP => " + img.getImg_text_size());
         locationSize.setText(String.valueOf(img.getImg_text_size()));
 
         save = findViewById(R.id.save_btn);
@@ -68,7 +65,6 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
             @Override
             public void onClick(View view) {
                 img.setImgTextSize(Integer.valueOf(locationSize.getText().toString()));
-                System.out.println("### " + img.getImg_text_size());
                 startActivity(getSpecificIntent(StartActivity.class));
             }
         });
